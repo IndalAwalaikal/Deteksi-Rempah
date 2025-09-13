@@ -1,0 +1,32 @@
+# Abaikan environment
+rempah_env_py310/
+venv/
+.venv/
+
+# Abaikan dataset & hasil training
+data/
+train/
+val/
+*.csv
+*.tsv
+*.json
+*.jpg
+*.jpeg
+*.png
+
+# Abaikan model besar
+model/
+*.h5
+*.hdf5
+*.pb
+*.ckpt
+*.pth
+
+# Cache & file sementara
+__pycache__/
+*.pyc
+*.pyo
+*.so
+*.dll
+.DS_Store
+Thumbs.db

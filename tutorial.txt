@@ -1,0 +1,5 @@
+python3.10 -m venv rempah_env_py310
+source rempah_env_py310/bin/activate
+python download_model.py
+python3 api.py
+python train_model.py
