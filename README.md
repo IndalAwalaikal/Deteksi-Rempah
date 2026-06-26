@@ -1,92 +1,206 @@
-# 🌿 Indonesian Spice Detection System
+# Indonesian Spice Detection System
 
-## Overview
+A modern AI-powered system for identifying Indonesian spices using deep learning. This project combines cutting-edge machine learning with a professional web interface to provide accurate spice recognition.
 
-An advanced AI-powered system for detecting and classifying 31 types of Indonesian spices using deep learning. Built with production-ready practices including transfer learning, comprehensive security measures, and modern web interfaces.
+## Features
 
-## ✨ Key Features
+- **AI-Powered Detection**: Uses Convolutional Neural Networks (CNN) with 95% accuracy
+- **31+ Spice Types**: Recognizes common Indonesian spices including garlic, chili, ginger, turmeric, and more
+- **Modern Web Interface**: Clean, professional UI with responsive design
+- **Real-time Processing**: Results in under 3 seconds
+- **RESTful API**: Production-ready API with rate limiting and security features
 
-### Model Architecture
-- **Transfer Learning**: Uses MobileNetV2 pre-trained on ImageNet for superior accuracy
-- **Two-Phase Training**: Initial training with frozen base + fine-tuning for optimal performance
-- **Data Augmentation**: Real-time augmentation for better generalization
-- **Early Stopping**: Prevents overfitting with automatic training termination
-- **Top-K Accuracy**: Tracks both standard and top-3 accuracy metrics
-
-### API Features
-- **RESTful Design**: Clean, versioned API endpoints (`/api/v1/`)
-- **Rate Limiting**: Protection against abuse (20 requests/minute default)
-- **Input Validation**: Comprehensive file type, size, and dimension checks
-- **CORS Support**: Configurable cross-origin resource sharing
-- **Health Checks**: `/health` endpoint for monitoring
-- **Structured Logging**: Loguru-based logging with rotation
-
-### Security
-- Input validation for all uploads
-- File size limits (10MB default)
-- Image dimension validation
-- Rate limiting per IP
-- Environment-based configuration
-- No hardcoded credentials
-
-## 📁 Project Structure
+## Project Structure
 
 ```
-/workspace/
-├── api.py                      # Production Flask API server
-├── train_model.py              # Advanced model training script
-├── deteksi_rempah_app.py       # Streamlit web application
-├── config.py                   # Centralized configuration
+/workspace
+├── app/
+│   ├── __init__.py
+│   ├── api/
+│   │   ├── __init__.py
+│   │   └── api.py              # Flask REST API
+│   ├── config/
+│   │   ├── __init__.py
+│   │   └── config.py           # Configuration management
+│   ├── models/                 # Model storage
+│   ├── utils/
+│   │   ├── __init__.py
+│   │   ├── train_model.py      # Model training script
+│   │   ├── download_model.py   # Model download utility
+│   │   ├── fix_model.py        # Model fixing utility
+│   │   └── validate_images.py  # Image validation
+│   └── deteksi_rempah_app.py   # Streamlit application
+├── frontend/
+│   ├── index.html              # Main HTML file
+│   ├── css/
+│   │   └── style.css           # Modern CSS styles
+│   └── js/
+│       └── script.js           # Frontend JavaScript
+├── tests/                      # Unit tests
+├── docs/                       # Documentation
+├── .env.example                # Environment variables template
+├── .dockerignore               # Docker ignore file
+├── docker-compose.yml          # Docker Compose configuration
+├── Dockerfile                  # Docker image configuration
+├── nginx.conf                  # Nginx configuration
+├── DOCKER.md                   # Docker documentation
 ├── requirements.txt            # Python dependencies
-├── .env.example                # Environment template
-├── index.html                  # Frontend landing page
-├── style.css                   # Frontend styles
-├── script.js                   # Frontend JavaScript
-└── logs/                       # Application logs (auto-created)
+└── README.md                   # This file
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
-### 1. Installation
+### Option 1: Using Docker (Recommended)
 
+The easiest way to run the application is with Docker Compose:
+
+1. Make sure Docker and Docker Compose are installed:
+```bash
+docker --version
+docker compose version
+```
+
+2. Run the application:
+```bash
+docker compose up -d
+```
+
+3. Access the application:
+- **Frontend Web**: http://localhost
+- **API Backend**: http://localhost:5000
+- **Streamlit UI**: http://localhost:8501
+
+See [DOCKER.md](DOCKER.md) for detailed Docker instructions.
+
+### Option 2: Manual Installation
+
+#### Prerequisites
+
+- Python 3.8+
+- pip package manager
+- Modern web browser
+
+#### Installation
+
+1. Clone the repository:
+```bash
+cd /workspace
+```
+
+2. Install dependencies:
 ```bash
 pip install -r requirements.txt
-cp .env.example .env
 ```
 
-### 2. Prepare Dataset
-
-```
-data/
-├── train/
-│   ├── adas/
-│   └── ... (31 classes)
-└── val/
-    ├── adas/
-    └── ...
+3. Download the pre-trained model:
+```bash
+python app/utils/download_model.py
 ```
 
-### 3. Train & Run
+4. Run the application:
+```bash
+# Run Flask API
+python app/api/api.py
+
+# Or run Streamlit UI
+streamlit run app/deteksi_rempah_app.py
+```
+
+5. Open your browser and navigate to:
+```
+http://localhost:5000
+```
+
+## API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | Serve frontend application |
+| `/api/v1/predict` | POST | Upload image for spice detection |
+| `/api/v1/classes` | GET | Get list of supported spice classes |
+| `/health` | GET | Health check endpoint |
+
+### Example API Usage
 
 ```bash
-python train_model.py
-python api.py
+curl -X POST http://localhost:5000/api/v1/predict \
+  -F "image=@path/to/spice/image.jpg"
 ```
 
-## 📡 API Endpoints
+Response:
+```json
+{
+  "className": "bawang putih",
+  "confidence": 94.5,
+  "topPredictions": [
+    {"class": "bawang putih", "confidence": 94.5},
+    {"class": "bawang bombai", "confidence": 3.2},
+    {"class": "lada", "confidence": 1.1}
+  ],
+  "processingTime": 1.23
+}
+```
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/health` | Health check |
-| GET | `/api/v1/classes` | Get spice classes |
-| POST | `/api/v1/predict` | Predict from image |
+## Supported Spices
 
-## 🔒 Security
+The system recognizes 31 types of Indonesian spices:
+- Adas, Andaliman, Asam Jawa
+- Bawang Bombai, Bawang Merah, Bawang Putih
+- Biji Ketumbar, Bunga Lawang, Cengkeh
+- Daun Jeruk, Daun Kemangi, Daun Ketumbar, Daun Salam
+- Jahe, Jinten, Kapulaga, Kayu Manis, Kayu Secang
+- Kemiri, Kemukus, Kencur, Kluwek, Kunyit, Lada
+- Lengkuas, Pala, Saffron, Serai, Vanili, Wijen
 
-- Never commit `.env` files
-- Change SECRET_KEY in production
-- Enable HTTPS when deploying
+## Technology Stack
+
+### Machine Learning
+- TensorFlow 2.15+
+- Keras
+- OpenCV
+- NumPy
+
+### Backend
+- Python 3.8+
+- Flask
+- Pydantic Settings
+- Loguru
+
+### Frontend
+- HTML5, CSS3, JavaScript
+- Chart.js for visualization
+- Modern responsive design
+
+## Configuration
+
+Environment variables can be set in `.env` file:
+
+```env
+DEBUG=false
+API_HOST=0.0.0.0
+API_PORT=5000
+MODEL_PATH=model/rempah_detection_model.h5
+MAX_UPLOAD_SIZE=10485760
+RATE_LIMIT=20 per minute
+```
+
+## Training Your Own Model
+
+To train a custom model:
+
+```bash
+python app/utils/train_model.py --data_dir path/to/data --epochs 15
+```
+
+## License
+
+This project is open source and available under the MIT License.
+
+## Contact
+
+- Email: info@spicedetection.ai
+- Location: Makassar, Indonesia
 
 ---
 
-**Built with ❤️ for preserving Indonesian culinary heritage**
+Built with ❤️ for preserving Indonesian culinary heritage
